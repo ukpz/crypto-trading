@@ -48,3 +48,7 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+
+
+https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&ids=ethereum,cardano,tron,dogecoin&sparkline=true
