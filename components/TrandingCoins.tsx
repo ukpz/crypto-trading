@@ -10,7 +10,7 @@ const TrandingCoins = () => {
     const insets = useSafeAreaInsets();
 
     const renderItem = ({ item }: { item: any }) => (
-        <CoinListItem item={item}/>
+        <CoinListItem item={item} />
     )
 
 

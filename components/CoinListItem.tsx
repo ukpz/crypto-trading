@@ -1,22 +1,19 @@
+import { transformSparkline } from '@/helpers/crypto';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Image, Pressable, Text, View } from 'react-native';
-import { LineChart } from 'react-native-svg-charts';
-import { wp } from "../helpers/common";
+import { LineChart } from 'react-native-wagmi-charts';
 
 const CoinListItem = ({ item }: { item: any }) => {
 
     const router = useRouter();
+    const sparkline = item?.sparkline_in_7d?.price || [];
+    const last24hPrices = sparkline.slice(-24);
+    // const data = transformSparkline(item.sparkline_in_7d.price);
+    const data = transformSparkline(last24hPrices);
+    const isUp = item.price_change_percentage_7d_in_currency > 0;
+    const strokeColor = isUp ? 'green' : 'red';
 
-
-    const Sparkline = ({ data, color }: { data: any, color: any }) => (
-        <LineChart
-            style={{ height: wp(10), width: wp(15) }}
-            data={data}
-            svg={{ stroke: color, strokeWidth: 2 }}
-            contentInset={{ top: 5, bottom: 5 }}
-        />
-    );
     return (
         <Pressable
             className="bg-white my-3 flex-row justify-between p-3 items-center rounded-xl shadow-md"
@@ -34,7 +31,11 @@ const CoinListItem = ({ item }: { item: any }) => {
                 </View>
             </View>
             <View>
-                <Sparkline data={item.sparkline_in_7d.price} color={item.price_change_percentage_24h >= 0 ? 'green' : 'red'} />
+                <LineChart.Provider data={data}>
+                    <LineChart height={60} width={80}>
+                        <LineChart.Path color={strokeColor} width={2} />
+                    </LineChart>
+                </LineChart.Provider>
             </View>
             <View>
                 <Text className="text-lg font-medium text-black">₹{item.current_price}</Text>

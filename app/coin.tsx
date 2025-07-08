@@ -5,8 +5,10 @@ import { useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LineChart } from 'react-native-svg-charts';
-import { hp, wp } from "../helpers/common";
+// import { LineChart } from 'react-native-svg-charts';
+import { transformToChartPoints } from '@/helpers/crypto';
+import { LineChart } from 'react-native-wagmi-charts';
+import { wp } from "../helpers/common";
 
 const timeRanges = [
     { label: '1H', type: 'binance', interval: '1m', limit: 60 },
@@ -58,7 +60,7 @@ const CoinDetailsScreen = () => {
                 const res = await fetch(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=inr&days=${range.days}`);
                 const json = await res.json();
                 const priceArr = json?.prices?.map((p: any) => p[1]) || [];
-                console.log('priceArr: ', priceArr);
+                // console.log('priceArr: ', priceArr);
 
                 setPriceData(priceArr);
             } catch (error) {
@@ -66,6 +68,7 @@ const CoinDetailsScreen = () => {
                 setPriceData([]);
             }
         }
+        // const chartPoints = transformToChartPoints(priceData);
     };
 
 
@@ -112,12 +115,15 @@ const CoinDetailsScreen = () => {
             </View>
 
             <View>
-                <LineChart
-                    style={{ height: hp(40), marginVertical: 20 }}
-                    data={priceData}
-                    svg={{ stroke: '#007bff', strokeWidth: 2 }}
-                    contentInset={{ top: 20, bottom: 20 }}
-                />
+                <LineChart.Provider data={transformToChartPoints(priceData)}>
+                    <LineChart height={200}>
+                        <LineChart.Path color="#0063F5" width={2} />
+                        <LineChart.CursorCrosshair>
+                            {/* <LineChart.Dot /> */}
+                            <LineChart.Tooltip />
+                        </LineChart.CursorCrosshair>
+                    </LineChart>
+                </LineChart.Provider>
                 <View className="flex-row justify-between flex-wrap m-4">
                     {timeRanges.map((tr, index) => (
                         <TouchableOpacity

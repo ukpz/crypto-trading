@@ -10,8 +10,8 @@ const PageHeader = ({ details }: { details: any }) => {
             <Pressable onPress={() => router.back()}>
                 <FontAwesome name="angle-left" size={28} color="black" className='me-5' />
             </Pressable>
-            <Image source={{ uri: details.image.small }} style={{ width: 30, height: 30 }} className='me-5' />
-            <Text className="text-2xl text-black font-semibold me-2">{details.name}</Text>
+            <Image source={{ uri: details.image.small }} style={{ width: 30, height: 30 }} className='me-3' />
+            <Text className="text-2xl text-black font-semibold me-1">{details.name}</Text>
             <Text className="text-xs text-gray-500 me-5"> ({details.symbol.toUpperCase()})</Text>
             <FontAwesome name="star-o" size={24} color="black" />
             <View className='ms-auto '>
