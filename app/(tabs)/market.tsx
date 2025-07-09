@@ -1,7 +1,9 @@
-import CoinListItem from '@/components/CoinListItem';
 import FilterTabs from '@/components/market/FilterTabs';
-import React, { useEffect, useState } from 'react';
-import { FlatList, Text, TouchableOpacity, View } from 'react-native';
+import MarketSelectorBottomSheet from '@/components/market/MarketSelectorBottomSheet';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const MarketScreen = () => {
@@ -11,6 +13,20 @@ const MarketScreen = () => {
   const [tab, setTab] = useState('all');
   const [showMarketModal, setShowMarketModal] = useState(false);
   const [marketChange, setMarketChange] = useState(0);
+  const [marketCurrency, setMarketCurrency] = useState('inr');
+  const [showSheet, setShowSheet] = useState(false);
+
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
+  // callbacks
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log('handleSheetChanges', index);
+  }, []);
+
+
 
 
   useEffect(() => {
@@ -47,8 +63,9 @@ const MarketScreen = () => {
   };
 
   return (
-    <View className='flex-1 m-4' style={{ top: insets.top }}>
-      <View className="flex-row justify-between items-center mb-3">
+    <GestureHandlerRootView>
+      <View className='flex-1' style={{ top: insets.top }}>
+        {/* <View className="flex-row justify-between items-center mb-3">
 
         <View>
           <Text className="text-2xl font-semibold">
@@ -61,25 +78,48 @@ const MarketScreen = () => {
         </View>
 
 
-        {/* <Text className="text-lg font-semibold">Market is down <Text className="text-red-600">-11.17%</Text></Text> */}
-        <TouchableOpacity onPress={() => setShowMarketModal(true)}>
+        <TouchableOpacity  >
           <Text className="text-sm text-gray-600">Market: INR ▾</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
 
-      <FilterTabs selected={tab} onSelect={applyTabFilter} />
+        {/* <MarketSelectorBottomSheet /> */}
 
-      <FlatList
+        <FilterTabs selected={tab} onSelect={applyTabFilter} />
+
+        {/* <FlatList
         data={filteredCoins}
         keyExtractor={(item: any) => item.id}
         renderItem={({ item }) => <CoinListItem item={item} />}
-      />
-
-      {/* <MarketSelectorModal
-        visible={showMarketModal}
-        onClose={() => setShowMarketModal(false)}
+        contentContainerStyle={{
+          paddingBottom: insets.bottom + 10,
+        }}
       /> */}
-    </View>
+
+
+        <MarketSelectorBottomSheet
+          isOpen={showSheet}
+          onClose={() => setShowSheet(false)}
+          selectedMarket={marketCurrency}
+          onSelect={(newMarket) => {
+            setMarketCurrency(newMarket);
+            // fetch again if needed
+          }}
+        />
+        {/* <GestureHandlerRootView className='flex-1 justify-center bg-blue-300'>
+      <BottomSheetModalProvider>
+          <BottomSheetModal
+            ref={bottomSheetModalRef}
+            onChange={handleSheetChanges}
+          >
+            <BottomSheetView className='flex-1'>
+              <Text>Awesome 🎉</Text>
+            </BottomSheetView>
+        </BottomSheetModal>
+        </BottomSheetModalProvider>
+        </GestureHandlerRootView> */}
+      </View>
+    </GestureHandlerRootView>
   )
 }
 

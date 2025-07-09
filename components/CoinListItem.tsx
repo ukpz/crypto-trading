@@ -11,7 +11,7 @@ const CoinListItem = ({ item }: { item: any }) => {
     const last24hPrices = sparkline.slice(-24);
     // const data = transformSparkline(item.sparkline_in_7d.price);
     const data = transformSparkline(last24hPrices);
-    const isUp = item.price_change_percentage_7d_in_currency > 0;
+    const isUp = item.price_change_percentage_24h > 0;
     const strokeColor = isUp ? 'green' : 'red';
 
     return (
