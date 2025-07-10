@@ -7,6 +7,7 @@ import { ActivityIndicator, Image, Text, TouchableOpacity, View } from 'react-na
 import { SafeAreaView } from 'react-native-safe-area-context';
 // import { LineChart } from 'react-native-svg-charts';
 import { transformToChartPoints } from '@/helpers/crypto';
+import { useRouter } from 'expo-router';
 import { LineChart } from 'react-native-wagmi-charts';
 import { wp } from "../helpers/common";
 
@@ -22,6 +23,7 @@ const timeRanges = [
 
 
 const CoinDetailsScreen = () => {
+    const router = useRouter();
     const { coinId } = useLocalSearchParams();
     const [priceData, setPriceData] = useState<number[]>([]);
     const [coinDetails, setCoinDetails] = useState<any>(dummyCoinDetails);
@@ -157,7 +159,7 @@ const CoinDetailsScreen = () => {
                 </TouchableOpacity>
 
                 <View className="flex-row justify-between p-4 gap-4 bg-white">
-                    <TouchableOpacity className="flex-1 bg-blue-600 py-4 rounded-md ">
+                    <TouchableOpacity className="flex-1 bg-blue-600 py-4 rounded-md " onPress={() => router.push('/buy' as any)}>
                         <Text className="text-center text-white font-bold text-xl">BUY</Text>
                     </TouchableOpacity>
                     <TouchableOpacity className="flex-1 bg-blue-600 py-4 rounded-md ">

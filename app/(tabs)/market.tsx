@@ -5,7 +5,6 @@ import { startLoading, stopLoading } from '@/store/loadingSlice';
 import { Feather } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
 
@@ -73,7 +72,7 @@ const MarketScreen = () => {
   };
 
   return (
-    <GestureHandlerRootView>
+    // <GestureHandlerRootView>
       <View className='flex-1' style={{ top: insets.top }}>
 
         <View className="flex-row justify-between items-start m-4">
@@ -130,7 +129,7 @@ const MarketScreen = () => {
         />
 
       </View>
-    </GestureHandlerRootView>
+    // </GestureHandlerRootView>
   )
 }
 
