@@ -3,92 +3,103 @@ import {
     BottomSheetModalProvider,
     BottomSheetView,
 } from '@gorhom/bottom-sheet';
-import React, { useCallback, useRef, useState } from 'react';
-import { Button, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
 
 type MarketOption = {
-    label: string;
-    value: 'inr' | 'btc' | 'usdt';
+  label: string;
+  value: 'inr' | 'btc' | 'usdt';
 };
 
 interface Props {
-    isOpen: boolean;
-    onClose: () => void;
-    selectedMarket: string;
-    onSelect: (value: string) => void;
+  isOpen: boolean;
+  onClose: () => void;
+  selectedMarket: string;
+  onSelect: (value: string) => void;
 }
 
 const marketOptions: MarketOption[] = [
-    { label: 'Indian - INR', value: 'inr' },
-    { label: 'Bitcoin - BTC', value: 'btc' },
-    { label: 'TetherUS - USDT', value: 'usdt' },
+  { label: 'Indian - INR', value: 'inr' },
+  { label: 'Bitcoin - BTC', value: 'btc' },
+  { label: 'TetherUS - USDT', value: 'usdt' },
 ];
 
-
 const MarketSelectorBottomSheet: React.FC<Props> = ({
-    isOpen,
-    onClose,
-    selectedMarket,
-    onSelect,
+  isOpen,
+  onClose,
+  selectedMarket,
+  onSelect,
 }) => {
-    const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-    const [tempSelection, setTempSelection] = useState(selectedMarket);
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const [tempSelection, setTempSelection] = useState(selectedMarket);
 
-    // callbacks
-    const handlePresentModalPress = useCallback(() => {
-        bottomSheetModalRef.current?.present();
-    }, []);
-    const handleSheetChanges = useCallback((index: number) => {
-        console.log('handleSheetChanges', index);
-    }, []);
+  // Sync tempSelection with selectedMarket when it changes
+  useEffect(() => {
+    setTempSelection(selectedMarket);
+  }, [selectedMarket]);
 
-    const handleUpdate = () => {
-        onSelect(tempSelection);
-        onClose();
-    };
+  // Control modal visibility based on isOpen prop
+  useEffect(() => {
+    if (isOpen) {
+      bottomSheetModalRef.current?.present();
+    } else {
+      bottomSheetModalRef.current?.dismiss();
+    }
+  }, [isOpen]);
 
-    return (
-        <BottomSheetModalProvider>
-            <Button
-                onPress={handlePresentModalPress}
-                title="Present Modal"
-                color="blue"
-            />
-            <BottomSheetModal
-                ref={bottomSheetModalRef}
-                onChange={handleSheetChanges}
+  // Handle sheet changes (e.g., when user swipes to dismiss)
+  const handleSheetChanges = useCallback((index: number) => {
+    // console.log('handleSheetChanges', index);
+    if (index === -1) {
+      onClose(); // Call onClose when the modal is dismissed
+    }
+  }, [onClose]);
+
+  // Handle Update Market button press
+  const handleUpdate = () => {
+    onSelect(tempSelection); // Update selectedMarket in parent
+    onClose(); // Close the modal
+  };
+
+  return (
+    <BottomSheetModalProvider>
+      <BottomSheetModal
+        ref={bottomSheetModalRef}
+        onChange={handleSheetChanges}
+        enablePanDownToClose
+      >
+        <BottomSheetView className="flex-1 p-4 pb-20">
+          <View>
+            <Text className="text-xl font-semibold mb-4">Markets</Text>
+            {marketOptions.map((option, index) => {
+              const isSelected = tempSelection === option.value;
+
+              return (
+                <TouchableOpacity
+                  key={option.value}
+                  className={`flex-row items-center justify-between py-3 ${
+                    marketOptions.length - 1 !== index ? 'border-b border-gray-200' : ''
+                  }`}
+                  onPress={() => setTempSelection(option.value)}
+                >
+                  <Text className="text-lg text-black">{option.label}</Text>
+                  <View
+                    className={`w-4 h-4 rounded-full ${isSelected ? 'bg-blue-600' : 'bg-gray-300'}`}
+                  />
+                </TouchableOpacity>
+              );
+            })}
+            <TouchableOpacity
+              onPress={handleUpdate}
+              className="mt-6 bg-blue-600 py-4 rounded-lg items-center"
             >
-                <BottomSheetView className='flex-1 p-8'>
-                    <View>
-                        <Text className="text-lg font-semibold mb-4">Select Market</Text>
-                        {marketOptions.map((option) => {
-                            const isSelected = tempSelection === option.value;
-
-                            return (
-                                <TouchableOpacity
-                                    key={option.value}
-                                    className="flex-row items-center justify-between py-3 border-b border-gray-200"
-                                    onPress={() => setTempSelection(option.value)}
-                                >
-                                    <Text className="text-base text-black">{option.label}</Text>
-                                    {isSelected && (
-                                        <View className="w-4 h-4 rounded-full bg-blue-600" />
-                                    )}
-                                </TouchableOpacity>
-                            );
-                        })}
-
-                        <TouchableOpacity
-                            onPress={handleUpdate}
-                            className="mt-6 bg-blue-600 py-3 rounded-xl items-center"
-                        >
-                            <Text className="text-white font-semibold text-base">Update Market</Text>
-                        </TouchableOpacity>
-                    </View>
-                </BottomSheetView>
-            </BottomSheetModal>
-        </BottomSheetModalProvider>
-    );
-}
+              <Text className="text-white font-semibold text-lg">Update Market</Text>
+            </TouchableOpacity>
+          </View>
+        </BottomSheetView>
+      </BottomSheetModal>
+    </BottomSheetModalProvider>
+  );
+};
 
 export default MarketSelectorBottomSheet;

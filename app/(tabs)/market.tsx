@@ -1,41 +1,50 @@
+import CoinListItem from '@/components/CoinListItem';
 import FilterTabs from '@/components/market/FilterTabs';
 import MarketSelectorBottomSheet from '@/components/market/MarketSelectorBottomSheet';
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View } from 'react-native';
+import { startLoading, stopLoading } from '@/store/loadingSlice';
+import { Feather } from '@expo/vector-icons';
+import React, { useEffect, useState } from 'react';
+import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useDispatch } from 'react-redux';
+
 
 const MarketScreen = () => {
+
   const insets = useSafeAreaInsets();
+  const dispatch = useDispatch();
+
   const [coins, setCoins] = useState([]);
   const [filteredCoins, setFilteredCoins] = useState([]);
   const [tab, setTab] = useState('all');
-  const [showMarketModal, setShowMarketModal] = useState(false);
   const [marketChange, setMarketChange] = useState(0);
-  const [marketCurrency, setMarketCurrency] = useState('inr');
-  const [showSheet, setShowSheet] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedMarket, setSelectedMarket] = useState('inr');
 
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
 
-  // callbacks
-  const handlePresentModalPress = useCallback(() => {
-    bottomSheetModalRef.current?.present();
-  }, []);
-  const handleSheetChanges = useCallback((index: number) => {
-    console.log('handleSheetChanges', index);
-  }, []);
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
 
-
-
+  const handleSelectMarket = (value: string) => {
+    setSelectedMarket(value); // Update selected market
+    // Optionally close the modal after selection
+    setIsModalOpen(false);
+  };
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [selectedMarket]);
 
   const fetchData = async () => {
+    dispatch(startLoading());
+
     const res = await fetch(
-      'https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&sparkline=true&price_change_percentage=24h'
+      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=${selectedMarket}&sparkline=true&price_change_percentage=24h`
     );
     const json = await res.json();
 
@@ -46,6 +55,7 @@ const MarketScreen = () => {
     const totalChange = json.reduce((sum: any, coin: any) => sum + (coin.price_change_percentage_24h || 0), 0);
     const avgChange = totalChange / json.length;
     setMarketChange(avgChange);
+    dispatch(stopLoading());
   };
 
 
@@ -65,59 +75,60 @@ const MarketScreen = () => {
   return (
     <GestureHandlerRootView>
       <View className='flex-1' style={{ top: insets.top }}>
-        {/* <View className="flex-row justify-between items-center mb-3">
 
-        <View>
-          <Text className="text-2xl font-semibold">
-            Market is {marketChange < 0 ? 'down' : 'up'}{' '}
-            <Text className={marketChange < 0 ? 'text-red-600' : 'text-green-600'}>
-              {marketChange.toFixed(2)}%
+        <View className="flex-row justify-between items-start m-4">
+          <View>
+            <Text className="text-2xl font-semibold">
+              Market is {marketChange < 0 ? 'down' : 'up'}{' '}
+              <Text className={marketChange < 0 ? 'text-red-600' : 'text-green-600'}>
+                {marketChange.toFixed(2)}%
+              </Text>
             </Text>
-          </Text>
-          <Text className='text-sm'>In the past 24 hours</Text>
+            <Text className='text-sm'>In the past 24 hours</Text>
+          </View>
+
+
+          <TouchableOpacity>
+            <Feather name="search" size={24} color={'grey'} />
+          </TouchableOpacity>
+        </View>
+
+        <View className="flex-row justify-between items-center m-4">
+          <View>
+            <Text className="text-2xl font-semibold">
+              Coins
+            </Text>
+          </View>
+
+          <TouchableOpacity onPress={handleOpenModal} className='px-2 py-1 border border-gray-400 rounded-full'>
+            <Text className="text-sm text-gray-600">Market-{selectedMarket.toUpperCase()} ▾</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View className='m-4'>
+          <FilterTabs selected={tab} onSelect={applyTabFilter} />
+        </View>
+
+        <View className='m-4'>
+          <FlatList
+            data={filteredCoins}
+            keyExtractor={(item: any) => item.id}
+            renderItem={({ item }) => <CoinListItem item={item} />}
+            contentContainerStyle={{
+              paddingBottom: insets.bottom + 10,
+            }}
+          />
         </View>
 
 
-        <TouchableOpacity  >
-          <Text className="text-sm text-gray-600">Market: INR ▾</Text>
-        </TouchableOpacity>
-      </View> */}
-
-        {/* <MarketSelectorBottomSheet /> */}
-
-        <FilterTabs selected={tab} onSelect={applyTabFilter} />
-
-        {/* <FlatList
-        data={filteredCoins}
-        keyExtractor={(item: any) => item.id}
-        renderItem={({ item }) => <CoinListItem item={item} />}
-        contentContainerStyle={{
-          paddingBottom: insets.bottom + 10,
-        }}
-      /> */}
-
 
         <MarketSelectorBottomSheet
-          isOpen={showSheet}
-          onClose={() => setShowSheet(false)}
-          selectedMarket={marketCurrency}
-          onSelect={(newMarket) => {
-            setMarketCurrency(newMarket);
-            // fetch again if needed
-          }}
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          selectedMarket={selectedMarket}
+          onSelect={handleSelectMarket}
         />
-        {/* <GestureHandlerRootView className='flex-1 justify-center bg-blue-300'>
-      <BottomSheetModalProvider>
-          <BottomSheetModal
-            ref={bottomSheetModalRef}
-            onChange={handleSheetChanges}
-          >
-            <BottomSheetView className='flex-1'>
-              <Text>Awesome 🎉</Text>
-            </BottomSheetView>
-        </BottomSheetModal>
-        </BottomSheetModalProvider>
-        </GestureHandlerRootView> */}
+
       </View>
     </GestureHandlerRootView>
   )

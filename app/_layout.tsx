@@ -1,3 +1,4 @@
+import LoadingOverlay from "@/components/LoadingOverlay";
 import { store } from "@/store";
 import { Stack } from "expo-router";
 import { Provider } from "react-redux";
@@ -6,12 +7,10 @@ import "../global.css";
 export default function RootLayout() {
   return (
     <Provider store={store}>
-      {/* <GestureHandlerRootView style={{ flex: 1 }}> */}
-        <Stack screenOptions={{
-          headerShown: false
-        }} />
-      {/* </GestureHandlerRootView> */}
-
+      <Stack screenOptions={{
+        headerShown: false
+      }} />
+      <LoadingOverlay />
     </Provider>
 
   );
