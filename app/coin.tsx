@@ -30,8 +30,6 @@ const CoinDetailsScreen = () => {
     const [loading, setLoading] = useState(true);
     const [selectedRange, setSelectedRange] = useState(0);
     const [usdtToInr, setUsdtToInr] = useState<number | null>(null);
-    const [selectedPoint, setSelectedPoint] = useState<number | null>(null);
-
 
     const fetchUSDTtoINR = async () => {
         const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=inr`);
@@ -153,20 +151,22 @@ const CoinDetailsScreen = () => {
                     </View>
                 </View>
 
-                <TouchableOpacity className="flex-row p-4 bg-white shadow-xl rounded-xl m-4 mb-10">
+                <TouchableOpacity className="flex-row p-4 bg-white shadow-xl rounded-xl m-4 mb-10" onPress={() => router.push('/transactions' as any)}>
                     <Text className="text-xl text-black font-medium">Transactions</Text>
                     <FontAwesome name="angle-right" size={28} className='ms-auto' />
                 </TouchableOpacity>
 
                 <View className="flex-row justify-between p-4 gap-4 bg-white">
-                    <TouchableOpacity className="flex-1 bg-blue-600 py-4 rounded-md " onPress={() => router.push('/buy' as any)}>
+                    <TouchableOpacity className="flex-1 bg-blue-600 py-4 rounded-md" onPress={() => router.push('/buy' as any)}>
                         <Text className="text-center text-white font-bold text-xl">BUY</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity className="flex-1 bg-blue-600 py-4 rounded-md ">
+                    <TouchableOpacity className="flex-1 bg-blue-600 py-4 rounded-md" onPress={() => router.push('/sell' as any)}>
                         <Text className="text-center text-white font-bold text-xl">SELL</Text>
                     </TouchableOpacity>
                 </View>
             </View>
+
+            
         </SafeAreaView>
     );
 };

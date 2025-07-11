@@ -1,10 +1,22 @@
 import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
-import React from 'react'
+import React, { useState } from 'react'
 import { Image, Pressable, Text, TouchableOpacity, View } from 'react-native'
+import ExchangeSelectorBottomSheet from '../ExchangeSelectorBottomSheet'
 
 const PageHeader = ({ details }: { details: any }) => {
     const router = useRouter();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [exchangeType, setExchangeType] = useState('');
+
+    const handleOpenModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+    };
+
     return (
         <View className='flex-row items-center m-4'>
             <Pressable onPress={() => router.back()}>
@@ -23,9 +35,15 @@ const PageHeader = ({ details }: { details: any }) => {
                     <View className='rounded-full p-1' style={{ backgroundColor: '#0063F5' }}>
                         <MaterialCommunityIcons name="swap-horizontal" size={10} color="#fff" />
                     </View>
-                    <Text className='text-md font-semibold ms-1' style={{ color: '#0063F5' }}>Exchange</Text>
+                    <Pressable onPress={handleOpenModal}>
+                        <Text className='text-md font-semibold ms-1' style={{ color: '#0063F5' }}>Exchange</Text>
+                    </Pressable>
                 </TouchableOpacity>
             </View>
+
+            <ExchangeSelectorBottomSheet
+                isOpen={isModalOpen}
+            />
         </View>
     )
 }
