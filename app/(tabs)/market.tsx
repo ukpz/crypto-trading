@@ -3,6 +3,7 @@ import FilterTabs from '@/components/market/FilterTabs';
 import MarketSelectorBottomSheet from '@/components/market/MarketSelectorBottomSheet';
 import { startLoading, stopLoading } from '@/store/loadingSlice';
 import { Feather } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,7 +11,7 @@ import { useDispatch } from 'react-redux';
 
 
 const MarketScreen = () => {
-
+  const router=useRouter();
   const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
 
@@ -87,7 +88,7 @@ const MarketScreen = () => {
           </View>
 
 
-          <TouchableOpacity>
+          <TouchableOpacity onPress={()=>router.push('/searchCoin')}>
             <Feather name="search" size={24} color={'grey'} />
           </TouchableOpacity>
         </View>

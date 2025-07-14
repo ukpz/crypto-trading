@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 // import { LineChart } from 'react-native-svg-charts';
+import ExchangeSelectorBottomSheet from '@/components/ExchangeSelectorBottomSheet';
 import { transformToChartPoints } from '@/helpers/crypto';
 import { useRouter } from 'expo-router';
 import { LineChart } from 'react-native-wagmi-charts';
@@ -30,6 +31,16 @@ const CoinDetailsScreen = () => {
     const [loading, setLoading] = useState(true);
     const [selectedRange, setSelectedRange] = useState(0);
     const [usdtToInr, setUsdtToInr] = useState<number | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [exchangeType, setExchangeType] = useState('');
+
+    const handleOpenModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+    };
 
     const fetchUSDTtoINR = async () => {
         const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=inr`);
@@ -105,7 +116,7 @@ const CoinDetailsScreen = () => {
     return (
         <SafeAreaView className='flex-1 justify-between'>
 
-            <PageHeader details={coinDetails} />
+            <PageHeader details={coinDetails} handleOpenModal={handleOpenModal}/>
 
             <View className='flex-row items-baseline m-4'>
                 <Text className="text-3xl font-bold me-4">₹{price.toLocaleString()}</Text>
@@ -166,7 +177,10 @@ const CoinDetailsScreen = () => {
                 </View>
             </View>
 
-            
+            <ExchangeSelectorBottomSheet
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+            />
         </SafeAreaView>
     );
 };

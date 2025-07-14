@@ -1,7 +1,8 @@
 import {
-    BottomSheetModal,
-    BottomSheetModalProvider,
-    BottomSheetView,
+  BottomSheetBackdrop,
+  BottomSheetModal,
+  BottomSheetModalProvider,
+  BottomSheetView,
 } from '@gorhom/bottom-sheet';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
@@ -67,6 +68,14 @@ const MarketSelectorBottomSheet: React.FC<Props> = ({
         ref={bottomSheetModalRef}
         onChange={handleSheetChanges}
         enablePanDownToClose
+        backdropComponent={(props) => (
+          <BottomSheetBackdrop
+            {...props}
+            appearsOnIndex={0}
+            disappearsOnIndex={-1}
+            opacity={0.5} // Adjust the dimming level
+          />
+        )}
       >
         <BottomSheetView className="flex-1 p-4 pb-20">
           <View>
@@ -77,9 +86,8 @@ const MarketSelectorBottomSheet: React.FC<Props> = ({
               return (
                 <TouchableOpacity
                   key={option.value}
-                  className={`flex-row items-center justify-between py-3 ${
-                    marketOptions.length - 1 !== index ? 'border-b border-gray-200' : ''
-                  }`}
+                  className={`flex-row items-center justify-between py-3 ${marketOptions.length - 1 !== index ? 'border-b border-gray-200' : ''
+                    }`}
                   onPress={() => setTempSelection(option.value)}
                 >
                   <Text className="text-lg text-black">{option.label}</Text>

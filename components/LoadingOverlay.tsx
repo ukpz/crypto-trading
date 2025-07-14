@@ -1,7 +1,9 @@
 // src/components/LoadingOverlay.tsx
+import { wp } from '@/helpers/common';
 import { RootState } from '@/store';
+import LottieView from 'lottie-react-native';
 import React from 'react';
-import { Image, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
 const LoadingOverlay = () => {
@@ -12,7 +14,12 @@ const LoadingOverlay = () => {
 
     return (
         <View style={styles.overlay}>
-            <Image source={require('@/assets/images/bitcoin-loading.gif')} width={width/2} height={width/2}/>
+            <LottieView
+                source={require('../assets/loader.json')}
+                autoPlay
+                loop
+                style={{ width: wp(50), height: wp(50) }}
+            />
         </View>
     );
 };
