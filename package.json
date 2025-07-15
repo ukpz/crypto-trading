@@ -19,6 +19,7 @@
     "@reduxjs/toolkit": "^2.8.2",
     "expo": "~53.0.15",
     "expo-blur": "~14.1.5",
+    "expo-clipboard": "~7.1.5",
     "expo-constants": "~17.1.6",
     "expo-font": "~13.3.2",
     "expo-haptics": "~14.1.4",
@@ -30,6 +31,7 @@
     "expo-symbols": "~0.4.5",
     "expo-system-ui": "~5.0.9",
     "expo-web-browser": "~14.2.0",
+    "lottie-react-native": "7.2.2",
     "nativewind": "^4.1.23",
     "prettier-plugin-tailwindcss": "0.5.11",
     "react": "19.0.0",
@@ -39,12 +41,13 @@
     "react-native-reanimated": "~3.17.4",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1",
+    "react-native-svg": "^15.12.0",
     "react-native-wagmi-charts": "^2.7.1",
     "react-native-web": "~0.20.0",
     "react-native-webview": "13.13.5",
+    "react-native-wheel-of-fortune": "^1.5.4",
     "react-redux": "^9.2.0",
-    "tailwindcss": "3.4.17",
-    "lottie-react-native": "7.2.2"
+    "tailwindcss": "3.4.17"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

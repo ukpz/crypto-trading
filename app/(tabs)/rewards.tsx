@@ -24,6 +24,7 @@ const RewardsScreen = () => {
         color="#F50062"
         image="Group-103"
         btnText='Get Tokens'
+        onPress={()=>router.push('/spinWheel')}
       />
     </View>
   )
