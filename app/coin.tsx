@@ -1,16 +1,18 @@
 import PageHeader from '@/components/coinDetails/PageHeader';
-import dummyCoinDetails from '@/data/coinDetails';
 import { FontAwesome } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Image, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 // import { LineChart } from 'react-native-svg-charts';
 import ExchangeSelectorBottomSheet from '@/components/ExchangeSelectorBottomSheet';
 import { transformToChartPoints } from '@/helpers/crypto';
+import { startLoading, stopLoading } from '@/store/loadingSlice';
 import { useRouter } from 'expo-router';
 import { LineChart } from 'react-native-wagmi-charts';
+import { useDispatch } from 'react-redux';
 import { wp } from "../helpers/common";
+
 
 const timeRanges = [
     { label: '1H', type: 'binance', interval: '1m', limit: 60 },
@@ -25,9 +27,11 @@ const timeRanges = [
 
 const CoinDetailsScreen = () => {
     const router = useRouter();
+    const dispatch = useDispatch();
     const { coinId } = useLocalSearchParams();
     const [priceData, setPriceData] = useState<number[]>([]);
-    const [coinDetails, setCoinDetails] = useState<any>(dummyCoinDetails);
+    const [coinDetails, setCoinDetails] = useState<any>(null);
+    // const [coinDetails, setCoinDetails] = useState<any>(dummyCoinDetails);
     const [loading, setLoading] = useState(true);
     const [selectedRange, setSelectedRange] = useState(0);
     const [usdtToInr, setUsdtToInr] = useState<number | null>(null);
@@ -50,6 +54,7 @@ const CoinDetailsScreen = () => {
 
 
     const fetchChartData = async (range: any) => {
+        // dispatch(startLoading());
         if (range.type === 'binance') {
             const symbol = `${coinDetails.symbol.toUpperCase()}USDT`;
 
@@ -79,48 +84,55 @@ const CoinDetailsScreen = () => {
                 setPriceData([]);
             }
         }
-        // const chartPoints = transformToChartPoints(priceData);
+
     };
 
 
     const fetchCoinDetails = async () => {
-        const res = await fetch(`https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&tickers=false&market_data=true`);
-        const json = await res.json();
-        setCoinDetails(json);
+        try {
+            const res = await fetch(`https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&tickers=false&market_data=true`);
+            const json = await res.json();
+            console.log('📦 Coin Details:', JSON.stringify(json, null, 2)); // pretty log
+            setCoinDetails(json);
+        } catch (error) {
+            console.error('❌ Failed to fetch coin details:', error);
+        }
     };
 
     useEffect(() => {
-        setLoading(true);
+        // setLoading(true);
+        dispatch(startLoading())
         const selected = timeRanges[selectedRange];
 
         Promise.all([
             fetchCoinDetails(),
             ...(selected.type === 'binance' ? [fetchUSDTtoINR()] : []),
         ]).then(() => fetchChartData(selected))
-            .then(() => setLoading(false));
+            .then(() => dispatch(stopLoading()));
     }, [selectedRange]);
 
 
+    if (!coinDetails || !coinDetails.market_data) return null;
 
-    if (loading || !coinDetails) return (
-        <View className="flex-1 justify-center items-center">
-            <ActivityIndicator size="large" color="blue" />
-        </View>
-    );
+    try {
+        var price = coinDetails?.market_data?.current_price?.inr ?? 0;
+        var priceChange24h = coinDetails?.market_data?.price_change_24h_in_currency?.inr ?? 0;
+        var priceChange24hPercent = coinDetails?.market_data?.price_change_percentage_24h_in_currency?.inr ?? 0;
+        var color = priceChange24h >= 0 ? 'green' : 'red';
+    } catch (error) {
+        console.error("💥 Error extracting price data", error);
+    }
 
-    const price = coinDetails.market_data.current_price.inr;
-    const priceChange24h = coinDetails.market_data.price_change_24h_in_currency.inr;
-    const priceChange24hPercent = coinDetails.market_data.price_change_percentage_24h_in_currency.inr;
-    const color = priceChange24h >= 0 ? 'green' : 'red';
+
 
     return (
         <SafeAreaView className='flex-1 justify-between'>
 
-            <PageHeader details={coinDetails} handleOpenModal={handleOpenModal}/>
+            <PageHeader details={coinDetails} handleOpenModal={handleOpenModal} />
 
             <View className='flex-row items-baseline m-4'>
                 <Text className="text-3xl font-bold me-4">₹{price.toLocaleString()}</Text>
-                <Text className="text-2xl" style={{ color }}>
+                <Text className="text-2xl" style={{ color: priceChange24h >= 0 ? 'green' : 'red' }}>
                     {priceChange24h >= 0 ? '+' : ''}{priceChange24h.toFixed(2)} ({priceChange24hPercent.toFixed(2)}%)
                 </Text>
             </View>

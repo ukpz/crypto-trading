@@ -1,5 +1,6 @@
 import CoinListItem from '@/components/CoinListItem';
 import { usePortfolioData } from '@/hooks/usePortfolioData';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -8,6 +9,7 @@ import coinListData from "../../data/coinsListData";
 const PortfolioScreen = () => {
   const { holdings, prices, sparklineData } = usePortfolioData();
   const insets = useSafeAreaInsets();
+  const router=useRouter();
 
   const investedValue = 1618.75;
   const availableInr = 1589;
@@ -58,11 +60,11 @@ const PortfolioScreen = () => {
       </View>
 
       {/* Deposit & Withdraw */}
-      <View className="flex-row gap-4 mb-8">
-        <TouchableOpacity className="bg-blue-600 flex-1 py-3 rounded-md">
+      <View className="flex-row gap-5 mb-8">
+        <TouchableOpacity className="bg-blue-600 flex-1 py-4 rounded-md" onPress={()=>router.push('/deposit')}>
           <Text className="text-white text-center font-semibold">Deposit INR</Text>
         </TouchableOpacity>
-        <TouchableOpacity className="border border-blue-600 flex-1 py-3 rounded-md">
+        <TouchableOpacity className="border border-blue-600 flex-1 py-4 rounded-md" onPress={()=>router.push('/withdraw')}>
           <Text className="text-blue-600 text-center font-semibold">Withdraw INR</Text>
         </TouchableOpacity>
       </View>

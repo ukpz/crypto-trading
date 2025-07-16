@@ -1,0 +1,67 @@
+1. Authentication Screens (❗Must-Have)
+    Add Login / Register / Forgot Password screens.
+    Support for Google / Apple / Email logins.
+
+2. Onboarding / Welcome Screens
+    A simple 3-step onboarding carousel explaining features (e.g. portfolio tracking, real-time prices, security).
+    Improves retention for new users.
+
+3. Dark Mode Toggle
+    Crypto users often prefer dark UIs.
+    Add dark/light mode toggle either in settings or header.
+
+4. Market Filter Enhancements
+    Add filter/sort in Market screen:
+    Market Cap
+    Volume
+    24h change
+    Trending coins
+
+5. Watchlist/Favourites
+    Let users star/favourite coins and track them separately.
+
+6. News or Alert Section
+    Add a crypto news tab or push notifications for big market moves.
+    You can pull headlines from CryptoPanic or CoinTelegraph APIs.
+
+7. Security Settings
+    Biometric login (FaceID / Fingerprint)
+    2FA setup
+    App lock option
+
+8. More Details in Coin Screen
+    Include:
+    Historical data (1D, 1W, 1M, 1Y)
+    Volume, market cap, circulating supply
+    Links: Website, Whitepaper, Explorer
+
+9. Portfolio Analytics
+    Add:
+    Pie chart (by coin/category)
+    Profit/loss tracking
+    Average buy price
+
+10. Responsive/Scaling
+    Ensure designs scale properly for:
+    iPhone SE → Tablets
+    Use tailwind responsive classes or react-native-size-matters / react-native-responsive-dimensions.
+
+11. UX Microinteractions
+    Add:
+    ✅ Button click feedback
+    ✅ Toasts for actions (e.g., coin added, transaction success)
+    ✅ Pull-to-refresh on list views
+
+12. Error & Empty States
+    Screens like:
+    No internet
+    No search results
+    No coins in portfolio
+
+✅ Bonus Feature Ideas (if you want to scale further):
+    Referral system
+    Rewards/Points dashboard
+    Education section (Crypto basics)
+    P2P trading screen
+    Custom alerts (price goes above/below X)
+    Chat with support

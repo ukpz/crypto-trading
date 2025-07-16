@@ -2,6 +2,7 @@ import LoadingOverlay from "@/components/LoadingOverlay";
 import { store } from "@/store";
 import { Stack } from "expo-router";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Toast from 'react-native-toast-message';
 import { Provider } from "react-redux";
 import "../global.css";
 
@@ -12,6 +13,9 @@ export default function RootLayout() {
         <Stack screenOptions={{
           headerShown: false
         }} />
+        <Toast 
+        topOffset={80}
+        />
         <LoadingOverlay />
       </GestureHandlerRootView>
     </Provider>

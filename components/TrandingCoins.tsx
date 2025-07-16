@@ -1,6 +1,6 @@
 import trandingCoins from '@/data/coinsListData';
-import React from 'react';
-import { FlatList, Text, View } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { FlatList, RefreshControl, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CoinListItem from './CoinListItem';
 
@@ -8,10 +8,21 @@ import CoinListItem from './CoinListItem';
 const TrandingCoins = () => {
 
     const insets = useSafeAreaInsets();
+    const [refreshing, setRefreshing] = useState(false);
+    const [data, setData] = useState(trandingCoins);
 
     const renderItem = ({ item }: { item: any }) => (
         <CoinListItem item={item} />
     )
+
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        // Simulate fetch
+        setTimeout(() => {
+            setData([...data]);
+            setRefreshing(false);
+        }, 1500);
+    }, [data]);
 
 
     return (
@@ -25,6 +36,9 @@ const TrandingCoins = () => {
                 contentContainerStyle={{
                     paddingBottom: insets.bottom + 10, // adds only safe space
                 }}
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#007bff']} tintColor="#007bff"/>
+                }
             />
         </View>
     )
