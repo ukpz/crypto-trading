@@ -1,14 +1,12 @@
 import PageHeader from '@/components/coinDetails/PageHeader';
-import { FontAwesome } from '@expo/vector-icons';
-import { useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-// import { LineChart } from 'react-native-svg-charts';
 import ExchangeSelectorBottomSheet from '@/components/ExchangeSelectorBottomSheet';
 import { transformToChartPoints } from '@/helpers/crypto';
 import { startLoading, stopLoading } from '@/store/loadingSlice';
-import { useRouter } from 'expo-router';
+import { FontAwesome } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LineChart } from 'react-native-wagmi-charts';
 import { useDispatch } from 'react-redux';
 import { wp } from "../helpers/common";
@@ -53,10 +51,15 @@ const CoinDetailsScreen = () => {
     };
 
 
-    const fetchChartData = async (range: any) => {
-        // dispatch(startLoading());
+    const fetchChartData = async (range: any, coinInfo: any) => {
         if (range.type === 'binance') {
-            const symbol = `${coinDetails.symbol.toUpperCase()}USDT`;
+            if (!coinInfo?.symbol) {
+                console.warn("⚠️ Symbol not available for Binance data.");
+                return;
+            }
+
+            const symbol = `${coinInfo.symbol.toUpperCase()}USDT`;
+            console.log('📊 Fetching Binance chart for symbol:', symbol);
 
             try {
                 const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${range.interval}&limit=${range.limit}`);
@@ -64,27 +67,22 @@ const CoinDetailsScreen = () => {
                 const closes = json.map((entry: any[]) =>
                     usdtToInr ? parseFloat(entry[4]) * usdtToInr : parseFloat(entry[4])
                 );
-
                 setPriceData(closes);
             } catch (error) {
                 console.error('Binance chart error:', error);
                 setPriceData([]);
             }
-
         } else if (range.type === 'coingecko') {
             try {
                 const res = await fetch(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=inr&days=${range.days}`);
                 const json = await res.json();
                 const priceArr = json?.prices?.map((p: any) => p[1]) || [];
-                // console.log('priceArr: ', priceArr);
-
                 setPriceData(priceArr);
             } catch (error) {
                 console.error('CoinGecko chart error:', error);
                 setPriceData([]);
             }
         }
-
     };
 
 
@@ -92,27 +90,44 @@ const CoinDetailsScreen = () => {
         try {
             const res = await fetch(`https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&tickers=false&market_data=true`);
             const json = await res.json();
-            console.log('📦 Coin Details:', JSON.stringify(json, null, 2)); // pretty log
             setCoinDetails(json);
+            console.log('fetchCoinDetails completed');
+            return json; // ✅ important
         } catch (error) {
             console.error('❌ Failed to fetch coin details:', error);
+            return null;
         }
     };
 
     useEffect(() => {
-        // setLoading(true);
-        dispatch(startLoading())
         const selected = timeRanges[selectedRange];
+        dispatch(startLoading());
 
-        Promise.all([
-            fetchCoinDetails(),
-            ...(selected.type === 'binance' ? [fetchUSDTtoINR()] : []),
-        ]).then(() => fetchChartData(selected))
-            .then(() => dispatch(stopLoading()));
+        const fetchAllData = async () => {
+            try {
+                const coinInfo = await fetchCoinDetails();
+                if (!coinInfo || !coinInfo.symbol) {
+                    console.warn('⚠️ Invalid coin info:', coinInfo);
+                    return;
+                }
+
+                if (selected.type === 'binance') {
+                    await fetchUSDTtoINR();
+                }
+
+                await fetchChartData(selected, coinInfo); // ✅ pass coinInfo here
+            } catch (error) {
+                console.error('Error loading data:', error);
+            } finally {
+                dispatch(stopLoading());
+            }
+        };
+
+        fetchAllData();
     }, [selectedRange]);
 
 
-    if (!coinDetails || !coinDetails.market_data) return null;
+    if (!coinDetails || !coinDetails.market_data || priceData.length < 1) return null;
 
     try {
         var price = coinDetails?.market_data?.current_price?.inr ?? 0;

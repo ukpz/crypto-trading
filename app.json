@@ -16,7 +16,8 @@
         "foregroundImage": "./assets/images/adaptive-icon2.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.ukpzoom4.cryptotrading"
     },
     "web": {
       "bundler": "metro",
@@ -37,6 +38,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "190c3c98-ed38-407e-82c4-888be758713c"
+      }
     }
   }
 }
